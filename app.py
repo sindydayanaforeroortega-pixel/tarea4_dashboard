@@ -150,17 +150,16 @@ st.header("📖 Componente 2 — Narrativa Analítica")
 
 # ─── ¿Qué analicé? ───
 st.subheader("¿Qué analicé?")
-st.write("Este análisis examina información recopilada de más de 28,000 plantas de energía de distintos países del mundo. La base de datos nos permite conocer dónde se encuentra cada planta, qué tipo de recurso natural utiliza para producir electricidad y cuánta energía puede generar. En esencia, es como tener un panorama completo de cómo el mundo obtiene la electricidad que utiliza diariamente.")
+st.write("Examiné información de más de 28,000 plantas de energía de distintos países del mundo. Estos datos nos dicen dónde está ubicada cada planta, qué tipo de recurso natural usa para producir electricidad y cuánta energía puede generar. Es como tener un panorama completo de cómo el mundo obtiene su electricidad.")
 
 # ─── ¿Qué encontré? ───
 st.subheader("¿Qué encontré?")
-st.write("Al observar los datos, lo primero que se nota es que la mayoría de las plantas son de tamaño pequeño o mediano, mientras que las instalaciones de gran capacidad son mucho menos frecuentes. Las fuentes de energía que aparecen con mayor frecuencia son la hidroeléctrica, la solar y la eólica. Sin embargo, aunque hay menos plantas que utilizan combustibles tradicionales como el carbón o energía nuclear, estas tienden a ser considerablemente más grandes y tienen mayor capacidad individual para producir electricidad. También se observa que cada región del mundo aprovecha principalmente los recursos que tiene disponibles cerca de su territorio.")
+st.write("La mayoría de las plantas son pequeñas o medianas; muy pocas son enormes. Las fuentes de energía que más aparecen son la hidroeléctrica, la solar y la eólica. Sin embargo, las plantas que usan carbón o energía nuclear, aunque son menos, suelen ser mucho más grandes y producen más electricidad cada una. También noté que cada región aprovecha principalmente los recursos que tiene cerca.")
 
 # ─── Visualización 1 ───
-st.subheader("📊 Visualización 1: Tipos de energía más comunes en el mundo")
-st.write("Este gráfico nos muestra cuáles son las fuentes de energía con más plantas en funcionamiento. Vemos que la hidroeléctrica, la solar y la eólica son las más numerosas del mundo.")
+st.subheader("📊 Tipos de energía más comunes en el mundo")
+st.write("Este gráfico nos muestra cuáles son las fuentes de energía con más plantas en funcionamiento. Se ve claramente que la hidroeléctrica, la solar y la eólica son las que más abundan en el mundo.")
 
-# Código del gráfico de barras
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -172,22 +171,21 @@ ax1.set_ylabel('Tipo de energía', fontsize=11)
 st.pyplot(fig1)
 
 # ─── Visualización 2 ───
-st.subheader("📊 Visualización 2: Tamaño de las plantas según su tipo de energía")
-st.write("Esta comparación nos ayuda a ver qué tan grandes son, en promedio, las plantas de cada tipo. Descubrimos que aunque hay menos plantas de carbón y nucleares, cada una de ellas produce mucha más electricidad que las renovables.")
+st.subheader("📊 Tamaño de las plantas según su tipo de energía")
+st.write("Al comparar el tamaño de las plantas, vemos que las que usan carbón o energía nuclear suelen ser mucho más grandes que las demás. Esto significa que aunque hay menos de estas plantas, cada una produce mucha más electricidad que la mayoría de las plantas renovables.")
 
-# Código del diagrama de caja
 fig2, ax2 = plt.subplots(figsize=(10, 6))
 sns.boxplot(data=df, x='fuel1', y='capacity_mw', ax=ax2)
 ax2.set_title('Capacidad de producción por tipo de energía', fontsize=14)
 ax2.set_xlabel('Tipo de energía', fontsize=11)
-ax2.set_ylabel('Capacidad (megavatios)', fontsize=11)
+ax2.set_ylabel('Capacidad de producción (megavatios)', fontsize=11)
 plt.xticks(rotation=45)
 st.pyplot(fig2)
 
 # ─── ¿Qué significa? ───
-st.subheader("¿Qué significa?")
-st.write("Estos resultados nos muestran que, si bien las energías renovables son hoy las más numerosas, las fuentes tradicionales siguen aportando una gran parte de la energía que consumimos. La mayor cantidad de plantas solares, eólicas e hidroeléctricas es una señal positiva de que estamos diversificando nuestras fuentes de energía. No obstante, el hecho de que las plantas tradicionales sean las más grandes nos indica que todavía dependemos de ellas para cubrir nuestra demanda completa. Cada tipo de energía tiene un propósito y una escala de producción distinta, y por eso se complementan entre sí.")
+st.subheader("¿Qué significa esto?")
+st.write("Que haya más plantas solares y eólicas es una buena señal de que estamos usando más energía limpia. Pero que las plantas tradicionales sean las más grandes nos dice que todavía dependemos de ellas para tener suficiente electricidad. No todas las fuentes de energía funcionan igual: unas son muchas pero pequeñas, y otras son pocas pero muy grandes.")
 
 # ─── ¿Qué se recomendaría? ───
 st.subheader("¿Qué se recomendaría?")
-st.write("Sería conveniente seguir impulsando el desarrollo de energías limpias en las regiones donde los recursos naturales sean abundantes, aprovechando especialmente el sol y el viento. También se sugiere mejorar la tecnología de las plantas renovables para que cada una pueda producir más energía, de manera que se reduzca paulatinamente la necesidad de depender de plantas que generan mayor impacto ambiental. Diversificar las fuentes de energía de cada país ayuda a asegurar que siempre tengamos electricidad disponible, sin depender de una única opción.")
+st.write("Conviene seguir aprovechando el sol y el viento en los lugares donde abundan. También sería bueno mejorar las plantas renovables para que cada una pueda producir más energía. Si diversificamos nuestras fuentes, no dependemos de una sola opción y el suministro de electricidad será más seguro y estable para todos.")
