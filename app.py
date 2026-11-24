@@ -1,5 +1,5 @@
-import pandas as pd
 import streamlit as st
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
@@ -7,144 +7,90 @@ from scipy import stats
 # Configuración de la página
 st.set_page_config(page_title="Análisis de Plantas de Energía", layout="wide")
 
-# ======================================
-# TÍTULO DESCRIPTIVO
-# ======================================
-st.title("⚡ Análisis de Plantas de Energía Mundial")
-st.subheader("Base de Datos Mundial de Plantas de Energía")
+# Cargar datos con caché
+@st.cache_data
+def cargar_datos():
+    df = pd.read_csv("global_power_plant_database.csv")
+    return df
+
+# Mensaje de carga
+with st.spinner("Cargando información... un momento por favor"):
+    df = cargar_datos()
+
+# Título principal
+st.title("⚡ Análisis de Plantas de Energía del Mundo")
 st.markdown("---")
 
-# ======================================
-# CARGA DE DATOS
-# ======================================
-df = pd.read_csv("global_power_plant_database.csv")
+# Barra lateral con filtros
+with st.sidebar:
+    st.header("🔍 Filtros")
+    lista_energias = sorted(df["fuel1"].dropna().unique())
+    energia_seleccionada = st.selectbox("Tipo de energía", lista_energias)
+    
+    valor_min = float(df["capacity_mw"].min())
+    valor_max = float(df["capacity_mw"].max())
+    rango = st.slider("Capacidad en MW", min_value=valor_min, max_value=valor_max,
+                      value=(valor_min, valor_max))
 
-# ======================================
-# BARRA LATERAL CON FILTROS
-# ======================================
-st.sidebar.header("🔍 Filtros Interactivos")
+# Sección de introducción
+st.header("📋 1. ¿Qué encontramos en estos datos?")
+st.write("Este análisis explora una base de datos con información de más de 28,000 plantas de energía en todo el mundo.")
+st.write("El objetivo es entender qué fuentes de energía se utilizan con mayor frecuencia, su capacidad de producción y qué patrones existen entre los distintos tipos de plantas.")
 
-# Filtro categórico: Tipo de combustible
-tipos_combustible = sorted(df['fuel1'].dropna().unique())
-combustible_seleccionado = st.sidebar.multiselect(
-    "Tipo de Combustible",
-    tipos_combustible,
-    default=tipos_combustible[:5]
-)
+st.subheader("Muestra de los datos")
+st.dataframe(df.head(5))
 
-# Filtro numérico: Capacidad en MW
-capacidad_min = float(df['capacity_mw'].min())
-capacidad_max = float(df['capacity_mw'].max())
-rango_capacidad = st.sidebar.slider(
-    "Capacidad (MW)",
-    min_value=capacidad_min,
-    max_value=capacidad_max,
-    value=(capacidad_min, capacidad_max)
-)
+# Sección de visualizaciones
+st.header("📊 2. Visualizaciones")
 
-# Aplicar filtros
-df_filtrado = df.copy()
-if combustible_seleccionado:
-    df_filtrado = df_filtrado[df_filtrado['fuel1'].isin(combustible_seleccionado)]
-df_filtrado = df_filtrado[
-    (df_filtrado['capacity_mw'] >= rango_capacidad[0]) &
-    (df_filtrado['capacity_mw'] <= rango_capacidad[1])
-]
-
-# ======================================
-# SECCIÓN 1: EXPLORACIÓN DE DATOS
-# ======================================
-st.header("📊 1. Exploración de Datos")
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Registros", f"{len(df_filtrado):,}")
-with col2:
-    st.metric("Media (MW)", f"{df_filtrado['capacity_mw'].mean():.2f}")
-with col3:
-    st.metric("Desviación Estándar", f"{df_filtrado['capacity_mw'].std():.2f}")
-
-st.subheader("Datos Filtrados")
-st.dataframe(df_filtrado[['country', 'name', 'fuel1', 'capacity_mw']].head(20), use_container_width=True)
-st.markdown("---")
-
-# ======================================
-# SECCIÓN 2: VISUALIZACIONES
-# ======================================
-st.header("📈 2. Visualizaciones")
-
-# Gráfico 1: Plantas por tipo de combustible
-st.subheader("🔌 Plantas por Tipo de Combustible")
-fig1, ax1 = plt.subplots(figsize=(10, 5))
-conteo_combustible = df_filtrado['fuel1'].value_counts()
-sns.barplot(x=conteo_combustible.index, y=conteo_combustible.values, ax=ax1, palette="viridis")
-ax1.set_xlabel("Tipo de Combustible")
-ax1.set_ylabel("Cantidad de Plantas")
+st.subheader("¿Qué tipo de energía tiene más plantas en el mundo?")
+conteo = df["fuel1"].value_counts()
+fig1, ax1 = plt.subplots(figsize=(10, 6))
+sns.barplot(x=conteo.index, y=conteo.values, palette="viridis", ax=ax1)
+ax1.set_xlabel("Fuente de energía")
+ax1.set_ylabel("Número de plantas registradas")
 plt.xticks(rotation=45)
 st.pyplot(fig1)
+st.info("💡 Interpretación: La energía hidroeléctrica y la solar son las que aparecen con mayor frecuencia en la base de datos, lo que sugiere una transición hacia fuentes renovables.")
 
-# Gráfico 2: Histograma de capacidad
-st.subheader("📐 Distribución de Capacidad Instalada (MW)")
-fig2, ax2 = plt.subplots(figsize=(10, 5))
-sns.histplot(df_filtrado['capacity_mw'].dropna(), kde=True, bins=30, ax=ax2, color="steelblue")
-ax2.set_xlabel("Capacidad (MW)")
-ax2.set_ylabel("Cantidad de Plantas")
-st.pyplot(fig2)
-
-# Gráfico 3: Diagrama de caja por combustible
-st.subheader("📦 Capacidad por Tipo de Combustible")
-fig3, ax3 = plt.subplots(figsize=(12, 5))
-datos_caja = df_filtrado[df_filtrado['fuel1'].isin(conteo_combustible.head(8).index)]
-sns.boxplot(x='fuel1', y='capacity_mw', data=datos_caja, ax=ax3)
-ax3.set_xlabel("Tipo de Combustible")
-ax3.set_ylabel("Capacidad (MW)")
+st.subheader("¿Qué tipo de planta tiene mayor capacidad instalada?")
+capacidad_prom = df.groupby("fuel1")["capacity_mw"].mean().sort_values(ascending=False)
+fig2, ax2 = plt.subplots(figsize=(10, 6))
+sns.barplot(x=capacidad_prom.index, y=capacidad_prom.values, palette="coolwarm", ax=ax2)
+ax2.set_xlabel("Fuente de energía")
+ax2.set_ylabel("Capacidad promedio (MW)")
 plt.xticks(rotation=45)
-st.pyplot(fig3)
+st.pyplot(fig2)
+st.info("💡 Interpretación: Aunque hay menos plantas de carbón y nucleares, cada una tiene una capacidad de producción mucho mayor en promedio que las plantas solares, eólicas o hidroeléctricas.")
 
-st.markdown("---")
+# Sección de validación estadística
+st.header("📈 3. Validación estadística")
+st.subheader("¿La diferencia de capacidad es real o casual?")
 
-# ======================================
-# SECCIÓN 3: VALIDACIÓN ESTADÍSTICA
-# ======================================
-st.header("🔬 3. Validación Estadística")
+datos_hidro = df[df["fuel1"] == "Hydro"]["capacity_mw"].dropna()
+datos_solar = df[df["fuel1"] == "Solar"]["capacity_mw"].dropna()
+t_stat, valor_p = stats.ttest_ind(datos_hidro, datos_solar, equal_var=False)
 
-st.subheader("Prueba utilizada: Prueba t de Student para muestras independientes")
+st.write(f"- Capacidad promedio hidroeléctrica: *{datos_hidro.mean():.1f} MW*")
+st.write(f"- Capacidad promedio solar: *{datos_solar.mean():.1f} MW*")
+st.write(f"- Valor de significancia (p): *{valor_p:.2e}*")
 
-col_t, col_p = st.columns(2)
-with col_t:
-    st.info(f"*Estadístico t:* -44.3778")
-with col_p:
-    st.info(f"*Valor p:* 0.0000")
+if valor_p < 0.05:
+    st.success("✅ Conclusión: La diferencia es estadísticamente significativa. Las plantas hidroeléctricas tienen mayor capacidad en promedio que las solares.")
+else:
+    st.info("✅ Conclusión: No hay suficiente evidencia para afirmar que las capacidades sean diferentes.")
 
-st.success("""
-*📝 Interpretación en lenguaje claro:*
-
-El valor p es mucho menor a 0.05. Esto significa que *la diferencia que encontramos no ocurrió por casualidad*. Existe una diferencia real y confiable entre los dos grupos que comparamos. Lo que observamos en los datos refleja una tendencia verdadera, no algo aleatorio.
-""")
-
-st.markdown("---")
-
-# ======================================
-# SECCIÓN 4: HALLAZGOS
-# ======================================
-st.header("💡 4. Hallazgos")
-
+# Hallazgos principales
+st.header("📌 4. Hallazgos principales")
 st.markdown("""
-- La mayoría de las plantas de energía son de capacidad pequeña; pocas son muy grandes.
-- Los tipos de energía más comunes son hidroeléctrica, solar y eólica.
-- Las plantas de carbón y nuclear tienen, en promedio, mayor capacidad individual.
-- A mayor capacidad instalada, suele haber mayor generación de energía, aunque no siempre se cumple esta relación.
-- Existen diferencias reales entre los distintos tipos de tecnología: no todos producen a la misma escala.
+- 🌍 Las energías renovables son las más numerosas en cantidad de instalaciones.
+- ⚡ Las plantas de energía convencional tienen mayor capacidad individual.
+- 📊 La mayoría de las instalaciones son de tamaño pequeño o mediano.
 """)
 
-with st.expander("ℹ️ Acerca del análisis"):
-    st.markdown("""
-    Este análisis utiliza la Base de Datos Mundial de Plantas de Energía, que recopila información sobre más de 28,000 plantas en todo el mundo. 
-    Los resultados que ves aquí cambian según los filtros que selecciones, lo que te permite explorar diferentes combinaciones de datos.
-    """)
-
+# Pie de página
 st.markdown("---")
-st.caption("📊 Tarea 4 — Comunicación de resultados mediante dashboard interactivo | UNAD")
+st.caption("📊 UNAD — Tarea 4 | Fuente de datos: Global Power Plant Database")
 st.markdown("---")
 st.header("📖 Componente 2 — Narrativa Analítica")
 
