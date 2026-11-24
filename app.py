@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy import stats
 
 st.set_page_config(page_title="Análisis de la Base de Datos Mundial de Plantas de Energía", layout="wide")
 
@@ -50,71 +49,55 @@ with col3:
 
 st.header("2. Visualizaciones")
 
-st.subheader("Cantidad de plantas por tipo de energía")
-conteo = df["fuel1"].value_counts()
+st.subheader("Gráfico 1: Cantidad de plantas por tipo de energía")
+conteo = df_filtrado["fuel1"].value_counts()
 fig1, ax1 = plt.subplots(figsize=(10, 6))
 sns.barplot(x=conteo.index, y=conteo.values, palette="viridis", ax=ax1)
 ax1.set_xlabel("Fuente de energía")
 ax1.set_ylabel("Número de plantas registradas")
 plt.xticks(rotation=45)
 st.pyplot(fig1)
-st.info("La energía hidroeléctrica y la solar son las más frecuentes en la base de datos.")
+st.info("Gráfico desarrollado en Tarea 3 Parte 3 — Se actualiza según los filtros seleccionados.")
 
-st.subheader("Capacidad promedio por tipo de energía")
-capacidad_prom = df.groupby("fuel1")["capacity_mw"].mean().sort_values(ascending=False)
+st.subheader("Gráfico 2: Capacidad promedio por tipo de energía")
+capacidad_prom = df_filtrado.groupby("fuel1")["capacity_mw"].mean().sort_values(ascending=False)
 fig2, ax2 = plt.subplots(figsize=(10, 6))
 sns.barplot(x=capacidad_prom.index, y=capacidad_prom.values, palette="coolwarm", ax=ax2)
 ax2.set_xlabel("Fuente de energía")
 ax2.set_ylabel("Capacidad promedio (MW)")
 plt.xticks(rotation=45)
 st.pyplot(fig2)
-st.info("Las plantas de carbón y nucleares tienen mayor capacidad individual, aunque son menos numerosas.")
+st.info("Gráfico desarrollado en Tarea 3 Parte 3 — Se actualiza según los filtros seleccionados.")
 
-st.subheader("Distribución de capacidad instalada")
+st.subheader("Gráfico 3: Distribución de capacidad instalada")
 fig3, ax3 = plt.subplots(figsize=(10, 5))
 sns.histplot(df_filtrado["capacity_mw"].dropna(), bins=30, kde=True, ax=ax3)
 ax3.set_xlabel("Capacidad en MW")
 ax3.set_ylabel("Cantidad de plantas")
 st.pyplot(fig3)
-st.info("La mayoría de las plantas son de pequeña o mediana capacidad.")
+st.info("Gráfico desarrollado en Tarea 3 Parte 3 — Se actualiza según los filtros seleccionados.")
 
 st.header("3. Validación estadística")
 
-st.subheader("Prueba t de Student: Hidroeléctrica vs. Solar")
+st.subheader("Prueba t de Student: Plantas renovables vs. no renovables")
+st.write("- Estadístico t: -44.3778  (Resultado calculado en Tarea 3 Parte 1)")
+st.write("- Valor p: 0.0000")
+st.write("- Nivel de confianza: 95% (alfa = 0.05)")
+st.success("En lenguaje claro: El valor p es menor a 0.05, por lo tanto existe una diferencia real y significativa entre la capacidad promedio de plantas renovables y no renovables. Esta diferencia no es por casualidad; hay evidencia estadística que confirma que las plantas no renovables tienen, en promedio, mayor capacidad instalada que las renovables.")
 
-datos_hidro = df[df["fuel1"] == "Hydro"]["capacity_mw"].dropna()
-datos_solar = df[df["fuel1"] == "Solar"]["capacity_mw"].dropna()
-t_stat, valor_p_t = stats.ttest_ind(datos_hidro, datos_solar, equal_var=False)
-
-st.write(f"- Capacidad promedio hidroeléctrica: {datos_hidro.mean():.1f} MW")
-st.write(f"- Capacidad promedio solar: {datos_solar.mean():.1f} MW")
-st.write(f"- Valor de significancia: {valor_p_t:.2e}")
-
-if valor_p_t < 0.05:
-    st.success("En lenguaje claro: Sí, hay una diferencia real. Las plantas hidroeléctricas tienen mayor capacidad en promedio que las solares. Esto no es por casualidad.")
-else:
-    st.info("En lenguaje claro: No hay suficiente evidencia para decir que sean diferentes. La diferencia observada podría ser azar.")
-
-st.subheader("Prueba Chi-cuadrado: Tipo de energía por país")
-
-contingencia = pd.crosstab(df["fuel1"], df["country"])
-chi2, valor_p_chi, grados_libertad, esperado = stats.chi2_contingency(contingencia)
-
-st.write(f"- Valor Chi-cuadrado: {chi2:.2f}")
-st.write(f"- Grados de libertad: {grados_libertad}")
-st.write(f"- Valor de significancia: {valor_p_chi:.2e}")
-
-if valor_p_chi < 0.05:
-    st.success("En lenguaje claro: Existe una relación real entre el tipo de energía y el país. No todos los tipos de plantas se encuentran igual en todos los países.")
-else:
-    st.info("En lenguaje claro: No se encontró una relación clara. El tipo de energía que se usa no depende del país según estos datos.")
+st.subheader("Prueba Chi-cuadrado: Tipo de energía por región")
+st.write("- Valor Chi-cuadrado: 44.00  (Resultado calculado en Tarea 3 Parte 1)")
+st.write("- Grados de libertad: 12")
+st.write("- Valor p: 0.0000")
+st.success("En lenguaje claro: El valor p es menor a 0.05, por lo tanto existe una relación real entre el tipo de energía y la región. No todos los tipos de plantas se distribuyen igual en el mundo; el lugar influye en qué tipo de energía se utiliza más. Esta relación no es por azar.")
 
 st.header("4. Hallazgos principales")
 st.markdown("""
 - Las energías renovables son las más abundantes en cantidad de instalaciones.
-- Las plantas de energía convencional tienen mayor capacidad por cada planta.
-- La mayoría de las instalaciones son de tamaño pequeño o mediano.
-- Existen diferencias importantes entre tipos de energía, tanto en su capacidad como en su distribución.
+- Las plantas de energía no renovable tienen significativamente mayor capacidad instalada en promedio.
+- La mayoría de las instalaciones son de pequeña o mediana capacidad.
+- Existe una relación entre el tipo de energía y la región geográfica del mundo.
+- Al usar los filtros, puedes ver cómo cambian estos resultados según el tipo de energía y su tamaño.
 """)
 
 st.markdown("---")
