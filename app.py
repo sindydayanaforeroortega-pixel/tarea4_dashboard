@@ -148,17 +148,46 @@ st.caption("📊 Tarea 4 — Comunicación de resultados mediante dashboard inte
 st.markdown("---")
 st.header("📖 Componente 2 — Narrativa Analítica")
 
-with st.expander("¿Qué analicé?"):
-    st.write("Estudié información de más de 28,000 plantas de energía de todo el mundo. Estos datos nos dicen dónde están ubicadas las plantas, qué tipo de energía producen y cuánta capacidad tienen para generar electricidad. Es como tener un mapa completo de cómo el mundo produce su energía.")
+# ─── ¿Qué analicé? ───
+st.subheader("¿Qué analicé?")
+st.write("Este análisis examina información recopilada de más de 28,000 plantas de energía de distintos países del mundo. La base de datos nos permite conocer dónde se encuentra cada planta, qué tipo de recurso natural utiliza para producir electricidad y cuánta energía puede generar. En esencia, es como tener un panorama completo de cómo el mundo obtiene la electricidad que utiliza diariamente.")
 
-with st.expander("¿Qué encontré?"):
-    st.write("Lo primero que noté es que la mayoría de las plantas son de tamaño pequeño o mediano; muy pocas son enormes. Las fuentes de energía más comunes son la hidroeléctrica, la solar y la eólica. Sin embargo, las plantas que usan carbón o energía nuclear, aunque son menos, suelen ser mucho más grandes y producen más electricidad cada una. También descubrí que no todos los países usan los mismos tipos de energía: depende mucho de los recursos naturales que tienen disponibles.")
+# ─── ¿Qué encontré? ───
+st.subheader("¿Qué encontré?")
+st.write("Al observar los datos, lo primero que se nota es que la mayoría de las plantas son de tamaño pequeño o mediano, mientras que las instalaciones de gran capacidad son mucho menos frecuentes. Las fuentes de energía que aparecen con mayor frecuencia son la hidroeléctrica, la solar y la eólica. Sin embargo, aunque hay menos plantas que utilizan combustibles tradicionales como el carbón o energía nuclear, estas tienden a ser considerablemente más grandes y tienen mayor capacidad individual para producir electricidad. También se observa que cada región del mundo aprovecha principalmente los recursos que tiene disponibles cerca de su territorio.")
 
-with st.expander("¿Qué significa?"):
-    st.write("Estos resultados nos muestran que hay una gran variedad en cómo se produce la energía en el mundo. Que las plantas solares y eólicas sean más abundantes es una buena señal de que estamos avanzando hacia fuentes más limpias. Pero que las plantas tradicionales sigan siendo las más grandes nos dice que todavía dependemos de ellas para satisfacer gran parte de nuestra demanda de electricidad. La diferencia en tamaño entre los distintos tipos de plantas también nos indica que no todas las tecnologías funcionan de la misma manera ni se construyen con los mismos propósitos.")
+# ─── Visualización 1 ───
+st.subheader("📊 Visualización 1: Tipos de energía más comunes en el mundo")
+st.write("Este gráfico nos muestra cuáles son las fuentes de energía con más plantas en funcionamiento. Vemos que la hidroeléctrica, la solar y la eólica son las más numerosas del mundo.")
 
-with st.expander("¿Qué se recomendaría?"):
-    st.write("Para quien planee proyectos de energía, conviene aprovechar más las fuentes renovables en lugares donde sean abundantes, como la solar en zonas con mucho sol. También sería bueno invertir en mejorar la capacidad de las plantas renovables para que cada una pueda producir más, igualando a las plantas tradicionales. Y finalmente, diversificar las fuentes de energía de cada país ayuda a que no dependamos de una sola opción, lo que hace el sistema más seguro y estable.")
+# Código del gráfico de barras
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-st.subheader("📊 Visualizaciones que respaldan estos hallazgos")
-st.info("🔍 Puedes consultar arriba los gráficos: 'Plantas por Tipo de Combustible' y 'Capacidad por Tipo de Combustible'")
+fig1, ax1 = plt.subplots(figsize=(10, 6))
+sns.countplot(data=df, y='fuel1', order=df['fuel1'].value_counts().index, ax=ax1)
+ax1.set_title('Cantidad de plantas por tipo de energía', fontsize=14)
+ax1.set_xlabel('Número de plantas', fontsize=11)
+ax1.set_ylabel('Tipo de energía', fontsize=11)
+st.pyplot(fig1)
+
+# ─── Visualización 2 ───
+st.subheader("📊 Visualización 2: Tamaño de las plantas según su tipo de energía")
+st.write("Esta comparación nos ayuda a ver qué tan grandes son, en promedio, las plantas de cada tipo. Descubrimos que aunque hay menos plantas de carbón y nucleares, cada una de ellas produce mucha más electricidad que las renovables.")
+
+# Código del diagrama de caja
+fig2, ax2 = plt.subplots(figsize=(10, 6))
+sns.boxplot(data=df, x='fuel1', y='capacity_mw', ax=ax2)
+ax2.set_title('Capacidad de producción por tipo de energía', fontsize=14)
+ax2.set_xlabel('Tipo de energía', fontsize=11)
+ax2.set_ylabel('Capacidad (megavatios)', fontsize=11)
+plt.xticks(rotation=45)
+st.pyplot(fig2)
+
+# ─── ¿Qué significa? ───
+st.subheader("¿Qué significa?")
+st.write("Estos resultados nos muestran que, si bien las energías renovables son hoy las más numerosas, las fuentes tradicionales siguen aportando una gran parte de la energía que consumimos. La mayor cantidad de plantas solares, eólicas e hidroeléctricas es una señal positiva de que estamos diversificando nuestras fuentes de energía. No obstante, el hecho de que las plantas tradicionales sean las más grandes nos indica que todavía dependemos de ellas para cubrir nuestra demanda completa. Cada tipo de energía tiene un propósito y una escala de producción distinta, y por eso se complementan entre sí.")
+
+# ─── ¿Qué se recomendaría? ───
+st.subheader("¿Qué se recomendaría?")
+st.write("Sería conveniente seguir impulsando el desarrollo de energías limpias en las regiones donde los recursos naturales sean abundantes, aprovechando especialmente el sol y el viento. También se sugiere mejorar la tecnología de las plantas renovables para que cada una pueda producir más energía, de manera que se reduzca paulatinamente la necesidad de depender de plantas que generan mayor impacto ambiental. Diversificar las fuentes de energía de cada país ayuda a asegurar que siempre tengamos electricidad disponible, sin depender de una única opción.")
