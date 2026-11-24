@@ -4,24 +4,19 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
 
-# Configuración de la página
-st.set_page_config(page_title="Análisis de Plantas de Energía", layout="wide")
+st.set_page_config(page_title="Análisis de Plantas de Energía del Mundo", layout="wide")
 
-# Cargar datos con caché
 @st.cache_data
 def cargar_datos():
     df = pd.read_csv("global_power_plant_database.csv")
     return df
 
-# Mensaje de carga
 with st.spinner("Cargando información... un momento por favor"):
     df = cargar_datos()
 
-# Título principal
 st.title("⚡ Análisis de Plantas de Energía del Mundo")
 st.markdown("---")
 
-# Barra lateral con filtros
 with st.sidebar:
     st.header("🔍 Filtros")
     lista_energias = sorted(df["fuel1"].dropna().unique())
@@ -32,40 +27,59 @@ with st.sidebar:
     rango = st.slider("Capacidad en MW", min_value=valor_min, max_value=valor_max,
                       value=(valor_min, valor_max))
 
-# Sección de introducción
-st.header("📋 1. ¿Qué encontramos en estos datos?")
+df_filtrado = df[
+    (df["fuel1"] == energia_seleccionada) &
+    (df["capacity_mw"] >= rango[0]) &
+    (df["capacity_mw"] <= rango[1])
+]
+
+st.header("📋 1. Exploración de datos")
 st.write("Este análisis explora una base de datos con información de más de 28,000 plantas de energía en todo el mundo.")
-st.write("El objetivo es entender qué fuentes de energía se utilizan con mayor frecuencia, su capacidad de producción y qué patrones existen entre los distintos tipos de plantas.")
 
-st.subheader("Muestra de los datos")
-st.dataframe(df.head(5))
+st.subheader("Datos filtrados según tus selecciones")
+st.dataframe(df_filtrado)
 
-# Sección de visualizaciones
+st.subheader("📊 Métricas del conjunto actual")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Total de plantas", f"{len(df_filtrado):,}")
+with col2:
+    st.metric("Capacidad promedio", f"{df_filtrado['capacity_mw'].mean():.1f} MW")
+with col3:
+    st.metric("Desviación estándar", f"{df_filtrado['capacity_mw'].std():.1f} MW")
+
 st.header("📊 2. Visualizaciones")
 
 st.subheader("¿Qué tipo de energía tiene más plantas en el mundo?")
-conteo = df["fuel1"].value_counts()
+conteo = df_filtrado["fuel1"].value_counts()
 fig1, ax1 = plt.subplots(figsize=(10, 6))
 sns.barplot(x=conteo.index, y=conteo.values, palette="viridis", ax=ax1)
 ax1.set_xlabel("Fuente de energía")
 ax1.set_ylabel("Número de plantas registradas")
 plt.xticks(rotation=45)
 st.pyplot(fig1)
-st.info("💡 Interpretación: La energía hidroeléctrica y la solar son las que aparecen con mayor frecuencia en la base de datos, lo que sugiere una transición hacia fuentes renovables.")
+st.info("💡 La energía hidroeléctrica y la solar son las más frecuentes en la base de datos.")
 
 st.subheader("¿Qué tipo de planta tiene mayor capacidad instalada?")
-capacidad_prom = df.groupby("fuel1")["capacity_mw"].mean().sort_values(ascending=False)
+capacidad_prom = df_filtrado.groupby("fuel1")["capacity_mw"].mean().sort_values(ascending=False)
 fig2, ax2 = plt.subplots(figsize=(10, 6))
 sns.barplot(x=capacidad_prom.index, y=capacidad_prom.values, palette="coolwarm", ax=ax2)
 ax2.set_xlabel("Fuente de energía")
 ax2.set_ylabel("Capacidad promedio (MW)")
 plt.xticks(rotation=45)
 st.pyplot(fig2)
-st.info("💡 Interpretación: Aunque hay menos plantas de carbón y nucleares, cada una tiene una capacidad de producción mucho mayor en promedio que las plantas solares, eólicas o hidroeléctricas.")
+st.info("💡 Las plantas de carbón y nucleares tienen mayor capacidad individual, aunque son menos numerosas.")
 
-# Sección de validación estadística
+st.subheader("Distribución de capacidad instalada")
+fig3, ax3 = plt.subplots(figsize=(10, 5))
+sns.histplot(df_filtrado["capacity_mw"].dropna(), bins=30, kde=True, ax=ax3)
+ax3.set_xlabel("Capacidad en MW")
+ax3.set_ylabel("Cantidad de plantas")
+st.pyplot(fig3)
+st.info("💡 La mayoría de las plantas son de pequeña o mediana capacidad.")
+
 st.header("📈 3. Validación estadística")
-st.subheader("¿La diferencia de capacidad es real o casual?")
+st.subheader("¿Existe diferencia real entre la capacidad de plantas hidroeléctricas y solares?")
 
 datos_hidro = df[df["fuel1"] == "Hydro"]["capacity_mw"].dropna()
 datos_solar = df[df["fuel1"] == "Solar"]["capacity_mw"].dropna()
@@ -73,25 +87,23 @@ t_stat, valor_p = stats.ttest_ind(datos_hidro, datos_solar, equal_var=False)
 
 st.write(f"- Capacidad promedio hidroeléctrica: *{datos_hidro.mean():.1f} MW*")
 st.write(f"- Capacidad promedio solar: *{datos_solar.mean():.1f} MW*")
-st.write(f"- Valor de significancia (p): *{valor_p:.2e}*")
+st.write(f"- Valor de significancia: *{valor_p:.2e}*")
 
 if valor_p < 0.05:
-    st.success("✅ Conclusión: La diferencia es estadísticamente significativa. Las plantas hidroeléctricas tienen mayor capacidad en promedio que las solares.")
+    st.success("✅ En lenguaje sencillo: Sí, existe una diferencia real. Las plantas hidroeléctricas tienen, en promedio, mayor capacidad que las solares. Esta diferencia no es por casualidad.")
 else:
-    st.info("✅ Conclusión: No hay suficiente evidencia para afirmar que las capacidades sean diferentes.")
+    st.info("✅ En lenguaje sencillo: No hay suficiente evidencia para decir que sean diferentes. Lo que vemos podría ser solo azar.")
 
-# Hallazgos principales
 st.header("📌 4. Hallazgos principales")
 st.markdown("""
-- 🌍 Las energías renovables son las más numerosas en cantidad de instalaciones.
-- ⚡ Las plantas de energía convencional tienen mayor capacidad individual.
+- 🌍 Las energías renovables son las más abundantes en cantidad de instalaciones.
+- ⚡ Las plantas de energía convencional tienen mayor capacidad por cada planta.
 - 📊 La mayoría de las instalaciones son de tamaño pequeño o mediano.
+- 🔍 Al usar los filtros, puedes ver cómo cambian estos resultados según el tipo de energía y su tamaño.
 """)
 
-# Pie de página
 st.markdown("---")
-st.caption("📊 UNAD — Tarea 4 | Fuente de datos: Global Power Plant Database")
-st.markdown("---")
+st.caption("📊 UNAD — Tarea 4 | Fuente de datos: Global Power Plant Database")st.markdown("---")
 st.header("📖 Componente 2 — Narrativa Analítica")
 
 # ─── ¿Qué analicé? ───
