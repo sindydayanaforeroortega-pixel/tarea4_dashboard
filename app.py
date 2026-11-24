@@ -103,7 +103,7 @@ st.markdown("""
 """)
 
 st.markdown("---")
-st.caption("📊 UNAD — Tarea 4 | Fuente de datos: Global Power Plant Database")st.markdown("---")
+st.caption(" UNAD — Tarea 4 | Fuente de datos: Global Power Plant Database")st.markdown("---")
 st.header("📖 Componente 2 — Narrativa Analítica")
 
 # ─── ¿Qué analicé? ───
