@@ -51,7 +51,7 @@ with col3:
 st.header("2. Visualizaciones")
 
 st.subheader("Cantidad de plantas por tipo de energía")
-conteo = df_filtrado["fuel1"].value_counts()
+conteo = df["fuel1"].value_counts()
 fig1, ax1 = plt.subplots(figsize=(10, 6))
 sns.barplot(x=conteo.index, y=conteo.values, palette="viridis", ax=ax1)
 ax1.set_xlabel("Fuente de energía")
@@ -61,7 +61,7 @@ st.pyplot(fig1)
 st.info("La energía hidroeléctrica y la solar son las más frecuentes en la base de datos.")
 
 st.subheader("Capacidad promedio por tipo de energía")
-capacidad_prom = df_filtrado.groupby("fuel1")["capacity_mw"].mean().sort_values(ascending=False)
+capacidad_prom = df.groupby("fuel1")["capacity_mw"].mean().sort_values(ascending=False)
 fig2, ax2 = plt.subplots(figsize=(10, 6))
 sns.barplot(x=capacidad_prom.index, y=capacidad_prom.values, palette="coolwarm", ax=ax2)
 ax2.set_xlabel("Fuente de energía")
@@ -80,7 +80,7 @@ st.info("La mayoría de las plantas son de pequeña o mediana capacidad.")
 
 st.header("3. Validación estadística")
 
-st.subheader("Prueba t de Student: Capacidad hidroeléctrica vs. solar")
+st.subheader("Prueba t de Student: Hidroeléctrica vs. Solar")
 
 datos_hidro = df[df["fuel1"] == "Hydro"]["capacity_mw"].dropna()
 datos_solar = df[df["fuel1"] == "Solar"]["capacity_mw"].dropna()
@@ -95,9 +95,9 @@ if valor_p_t < 0.05:
 else:
     st.info("En lenguaje claro: No hay suficiente evidencia para decir que sean diferentes. La diferencia observada podría ser azar.")
 
-st.subheader("Prueba Chi-cuadrado: Tipo de energía por región")
+st.subheader("Prueba Chi-cuadrado: Tipo de energía por país")
 
-contingencia = pd.crosstab(df["fuel1"], df["region"])
+contingencia = pd.crosstab(df["fuel1"], df["country"])
 chi2, valor_p_chi, grados_libertad, esperado = stats.chi2_contingency(contingencia)
 
 st.write(f"- Valor Chi-cuadrado: {chi2:.2f}")
@@ -105,21 +105,20 @@ st.write(f"- Grados de libertad: {grados_libertad}")
 st.write(f"- Valor de significancia: {valor_p_chi:.2e}")
 
 if valor_p_chi < 0.05:
-    st.success("En lenguaje claro: Existe una relación real entre el tipo de energía y la región. No todos los tipos de plantas se distribuyen igual en el mundo.")
+    st.success("En lenguaje claro: Existe una relación real entre el tipo de energía y el país. No todos los tipos de plantas se encuentran igual en todos los países.")
 else:
-    st.info("En lenguaje claro: No se encontró una relación clara. El tipo de energía no depende de la región según estos datos.")
+    st.info("En lenguaje claro: No se encontró una relación clara. El tipo de energía que se usa no depende del país según estos datos.")
 
 st.header("4. Hallazgos principales")
 st.markdown("""
 - Las energías renovables son las más abundantes en cantidad de instalaciones.
 - Las plantas de energía convencional tienen mayor capacidad por cada planta.
 - La mayoría de las instalaciones son de tamaño pequeño o mediano.
-- Existen diferencias estadísticas importantes entre tipos de energía, tanto en su capacidad como en su distribución por regiones.
+- Existen diferencias importantes entre tipos de energía, tanto en su capacidad como en su distribución.
 """)
 
 st.markdown("---")
 st.caption("UNAD — Tarea 4 | Fuente de datos: Global Power Plant Database")
-
 st.header("📖 Componente 2 — Narrativa Analítica")
 
 # ─── ¿Qué analicé? ───
