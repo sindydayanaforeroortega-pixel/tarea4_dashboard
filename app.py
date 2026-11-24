@@ -145,3 +145,20 @@ with st.expander("ℹ️ Acerca del análisis"):
 
 st.markdown("---")
 st.caption("📊 Tarea 4 — Comunicación de resultados mediante dashboard interactivo | UNAD")
+st.markdown("---")
+st.header("📖 Componente 2 — Narrativa Analítica")
+
+with st.expander("¿Qué analicé?"):
+    st.write("Estudié información de más de 28,000 plantas de energía de todo el mundo. Estos datos nos dicen dónde están ubicadas las plantas, qué tipo de energía producen y cuánta capacidad tienen para generar electricidad. Es como tener un mapa completo de cómo el mundo produce su energía.")
+
+with st.expander("¿Qué encontré?"):
+    st.write("Lo primero que noté es que la mayoría de las plantas son de tamaño pequeño o mediano; muy pocas son enormes. Las fuentes de energía más comunes son la hidroeléctrica, la solar y la eólica. Sin embargo, las plantas que usan carbón o energía nuclear, aunque son menos, suelen ser mucho más grandes y producen más electricidad cada una. También descubrí que no todos los países usan los mismos tipos de energía: depende mucho de los recursos naturales que tienen disponibles.")
+
+with st.expander("¿Qué significa?"):
+    st.write("Estos resultados nos muestran que hay una gran variedad en cómo se produce la energía en el mundo. Que las plantas solares y eólicas sean más abundantes es una buena señal de que estamos avanzando hacia fuentes más limpias. Pero que las plantas tradicionales sigan siendo las más grandes nos dice que todavía dependemos de ellas para satisfacer gran parte de nuestra demanda de electricidad. La diferencia en tamaño entre los distintos tipos de plantas también nos indica que no todas las tecnologías funcionan de la misma manera ni se construyen con los mismos propósitos.")
+
+with st.expander("¿Qué se recomendaría?"):
+    st.write("Para quien planee proyectos de energía, conviene aprovechar más las fuentes renovables en lugares donde sean abundantes, como la solar en zonas con mucho sol. También sería bueno invertir en mejorar la capacidad de las plantas renovables para que cada una pueda producir más, igualando a las plantas tradicionales. Y finalmente, diversificar las fuentes de energía de cada país ayuda a que no dependamos de una sola opción, lo que hace el sistema más seguro y estable.")
+
+st.subheader("📊 Visualizaciones que respaldan estos hallazgos")
+st.info("🔍 Puedes consultar arriba los gráficos: 'Plantas por Tipo de Combustible' y 'Capacidad por Tipo de Combustible'")
