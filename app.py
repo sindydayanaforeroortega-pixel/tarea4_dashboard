@@ -102,8 +102,7 @@ st.markdown("""
 - 🔍 Al usar los filtros, puedes ver cómo cambian estos resultados según el tipo de energía y su tamaño.
 """)
 
-st.markdown("---")
-st.caption(" UNAD — Tarea 4 | Fuente de datos: Global Power Plant Database")st.markdown("---")
+
 st.header("📖 Componente 2 — Narrativa Analítica")
 
 # ─── ¿Qué analicé? ───
