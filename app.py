@@ -91,7 +91,20 @@ st.write("- Grados de libertad: 12")
 st.write("- Valor p: 0.0000")
 st.success("En lenguaje claro: El valor p es menor a 0.05, por lo tanto existe una relación real entre el tipo de energía y la región. No todos los tipos de plantas se distribuyen igual en el mundo; el lugar influye en qué tipo de energía se utiliza más. Esta relación no es por azar.")
 
-st.header("4. Hallazgos principales")
+st.header("4. Acerca del análisis")
+st.subheader("Relación entre tipo de energía y región")
+st.write("""
+Encontramos que el tipo de energía que se usa cambia según la región del mundo. 
+Estadísticamente, esta relación es muy consistente — no es casualidad que ciertas 
+energías sean más comunes en unas zonas que en otras.
+
+Esto significa que al planear nuevas plantas, es útil mirar qué energías funcionan 
+bien en cada región. Sin embargo, la región no es el único factor que decide qué 
+tipo de energía es mejor; también influyen los recursos naturales, costos y 
+normativas locales.
+""")
+
+st.header("5. Hallazgos principales")
 st.markdown("""
 - Las energías renovables son las más abundantes en cantidad de instalaciones.
 - Las plantas de energía no renovable tienen significativamente mayor capacidad instalada en promedio.
